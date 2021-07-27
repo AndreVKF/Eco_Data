@@ -88,18 +88,23 @@ class YFinanceWrapper:
             # Atualiza products table
             self.Products = pd.read_sql("SELECT * FROM Products", con=self.dbEngine)
         
-    def updatePriceHistory(self, tickers, byPeriodType, period=False, start=False, end=False, returnDataDF=False):
+    def updatePriceHistory(self, byPeriodType, tickers="All", period=False, start=False, end=False, returnDataDF=False):
         """Function to update prices to database
 
         Args:
-            tickers (list of str): List of tickers to be updated
             byPeriodType (str): Should be "period" or "date"
+            tickers (str ||list of str, optional): List of tickers to be updated. If "All" update all tickers from self.Products
             period (bool, optional): Period description. Defaults to False.
             start (bool, optional): Start date. Defaults to False.
             end (bool, optional): End date. Defaults to False.
             returnDataDF (bool, optional): Flag to return dataframe. Defaults to False
         """
-        tickersStr = ' '.join(tickers)
+        # Adjust list of tickers to retrieve data from yahoo finance
+        if tickers=="All":
+            tickerList = self.Products["yFinanceCode"].to_list()
+            tickersStr = ' '.join(tickerList)
+        else:
+            tickersStr = ' '.join(tickers)
         
         # Check "byPeriodType" entry
         if byPeriodType=="period":
